@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "tie"
+name = "tieh"
 version = "0.1.0"
 description = "Tiè! Send files to PC"
 authors = [{ name = "Fubeeo" }]
@@ -12,12 +12,13 @@ readme = "README.md"
 dependencies = [
     "flask",
     "flask_socketio",
+    "appdirs",
     "Pillow",
     "qrcode",
 ]
 
 [project.scripts]
-tie = "tie:main"
+tieh = "tieh:main"
 
 [tool.hatch.envs.default]
 dependencies = ["pre-commit"]

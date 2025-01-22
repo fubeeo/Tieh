@@ -1,6 +1,8 @@
 import io
 import os
 import socket
+import webbrowser
+from appdirs import user_data_dir
 
 import PIL
 import qrcode
@@ -15,9 +17,13 @@ from flask import (
 )
 from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
+from threading import Timer
 
-UPLOAD_FOLDER = "uploads"
-THUMBNAIL_FOLDER = "thumbnails"
+APP_NAME = "Tieh"
+APP_AUTHOR = "Fubeeo"
+APP_DATA_DIR = user_data_dir(APP_NAME, APP_AUTHOR)
+UPLOAD_FOLDER = os.path.join(APP_DATA_DIR, "uploads")
+THUMBNAIL_FOLDER = os.path.join(APP_DATA_DIR, "thumbnails")
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -30,7 +36,7 @@ def index():
     port = 5000
     qr_data = f"http://{local_ip}:{port}/send_page"
 
-    return render_template("index.html", url=qr_data, files=os.listdir("uploads"))
+    return render_template("index.html", url=qr_data, files=os.listdir(UPLOAD_FOLDER))
 
 
 @app.route("/qrcode", methods=["GET"])
@@ -90,7 +96,7 @@ def send():
             if file.mimetype.startswith("image"):
                 thumbnail = PIL.Image.open(file_path)
                 thumbnail.thumbnail((128, 128))
-                thumbnail.save(os.path.join("thumbnails", filename))
+                thumbnail.save(os.path.join(THUMBNAIL_FOLDER, filename))
 
         except Exception as e:
             return f"Error saving file: {str(e)}", 500
@@ -101,7 +107,7 @@ def send():
 
 @app.route("/received")
 def received():
-    return render_template("received.html", files=os.listdir("uploads"))
+    return render_template("received.html", files=os.listdir(UPLOAD_FOLDER))
 
 
 @app.route("/uploads/<filename>")
@@ -123,10 +129,17 @@ def clear():
     return "", 200
 
 
+def open_browser():
+    webbrowser.open("http://localhost:5000")
+
+
 def main():
+    # Create app data directories
+    os.makedirs(APP_DATA_DIR, exist_ok=True)
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     os.makedirs(THUMBNAIL_FOLDER, exist_ok=True)
 
+    Timer(1, open_browser).start()
     socketio.run(app, host="0.0.0.0", port=5000, debug=False)
 
 
