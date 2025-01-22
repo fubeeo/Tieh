@@ -102,12 +102,12 @@ def send():
             return f"Error saving file: {str(e)}", 500
 
     socketio.emit("file_uploaded", namespace="/")
-    return redirect(url_for("received"))
+    return redirect(url_for("uploads"))
 
 
-@app.route("/received")
-def received():
-    return render_template("received.html", files=os.listdir(UPLOAD_FOLDER))
+@app.route("/uploads")
+def uploads():
+    return render_template("uploads.html", files=os.listdir(UPLOAD_FOLDER))
 
 
 @app.route("/uploads/<filename>")
@@ -140,7 +140,7 @@ def main():
     os.makedirs(THUMBNAIL_FOLDER, exist_ok=True)
 
     Timer(1, open_browser).start()
-    socketio.run(app, host="0.0.0.0", port=5000, debug=False)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
 
 
 if __name__ == "__main__":

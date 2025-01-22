@@ -55,7 +55,7 @@ body {
     flex-shrink: 0;
 }
 
-.received-card {
+.uploads-card {
     background-color: #fff;
     padding: 2rem;
     border-radius: 15px;
@@ -126,7 +126,7 @@ body {
 }
 
 @media (max-width: 768px) {
-    .received-card {
+    .uploads-card {
         width: 90%;
         padding: 1.5rem;
         margin: 1rem auto;
@@ -139,7 +139,7 @@ body {
         align-items: center;
     }
 
-    .received-card {
+    .uploads-card {
         margin-left: 0;
         margin-top: 2rem;
         width: 100%;
