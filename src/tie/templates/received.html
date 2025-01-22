@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Received Files</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io();
+            socket.on('file_uploaded', () => {
+                window.location.reload();
+            });
+        });
+    </script>
+</head>
+
+<body class="bg-light">
+    <div class="container">
+        <h1 class="text-center brand-name">
+            <em>Tiè!</em>
+        </h1>
+        <div class="received-card">
+            <a href="/send_page" class="back-button btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-center mb-1">Received files</h2>
+                <button onclick="clearFiles()" class="btn btn-danger ms-3">
+                    <i class="bi bi-trash"></i> Clear all
+                </button>
+            </div>
+            <div class="file-list list-group">
+                {% if not files %}
+                <div class="text-center text-muted">No files received yet</div>
+                {% endif %}
+                {% for file in files %}
+                <a href="./uploads/{{ file }}" class="list-group-item list-group-item-action">
+                    <div class="file-icon">
+                        {% if file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')) %}
+                        <img src="./thumbnails/{{ file }}" alt="Thumbnail">
+                        {% else %}
+                        <i class="bi bi-file-earmark"></i>
+                        {% endif %}
+                    </div>
+                    <div class="file-name">{{ file }}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <footer class="text-end mt-4">
+            <em>fubeeo | 2025</em>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function clearFiles() {
+            if (confirm('Are you sure you want to delete all files?')) {
+                fetch('/clear', {
+                    method: 'POST',
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = '/send_page';
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
