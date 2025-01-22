@@ -12,7 +12,9 @@ A simple web application to quickly transfer files from your phone to your PC us
 ## Installation
 
 ```bash
-pip install tieh
+git clone https://github.com/fubeeo/tieh.git
+cd tieh
+pip install .
 ```
 
 ## Usage
