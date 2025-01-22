@@ -1,11 +1,13 @@
+import argparse
 import io
 import os
 import socket
 import webbrowser
-from appdirs import user_data_dir
+from threading import Timer
 
 import PIL
 import qrcode
+from appdirs import user_data_dir
 from flask import (
     Flask,
     redirect,
@@ -17,7 +19,6 @@ from flask import (
 )
 from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename
-from threading import Timer
 
 APP_NAME = "Tieh"
 APP_AUTHOR = "Fubeeo"
@@ -48,7 +49,7 @@ def generate_qrcode():
 
     # Generate QR code
     qr = qrcode.QRCode(
-        version=2,
+        version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=7,
         border=0,
@@ -129,18 +130,61 @@ def clear():
     return "", 200
 
 
+@app.route("/share/<token>")
+def share(token):
+    if token not in app.config["SHARED_FILES"]:
+        return "File not found", 404
+    filepath = app.config["SHARED_FILES"][token]
+    return send_file(filepath, as_attachment=True)
+
+
+def get_share_url(filepath):
+    hostname = socket.getfqdn()
+    local_ip = socket.gethostbyname_ex(hostname)[2][1]
+    port = 5000
+
+    # Generate a simple token from filepath
+    token = hex(hash(filepath))[2:10]
+    app.config["SHARED_FILES"] = {token: filepath}
+
+    return f"http://{local_ip}:{port}/share/{token}"
+
+
 def open_browser():
     webbrowser.open("http://localhost:5000")
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Tiè! Send files to PC")
+    parser.add_argument("filepath", nargs="?", help="File to share")
+    args = parser.parse_args()
+
     # Create app data directories
     os.makedirs(APP_DATA_DIR, exist_ok=True)
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     os.makedirs(THUMBNAIL_FOLDER, exist_ok=True)
 
-    Timer(1, open_browser).start()
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+    if args.filepath:
+        if not os.path.exists(args.filepath):
+            print(f"Error: File '{args.filepath}' not found")
+            return
+
+        share_url = get_share_url(os.path.abspath(args.filepath))
+
+        # Generate and display QR code in terminal
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            border=1,
+        )
+        qr.add_data(share_url)
+        print("\nScan the QR code to download the file:")
+        qr.print_ascii(invert=True)
+        print(f"Or visit: {share_url}")
+    else:
+        Timer(1, open_browser).start()
+
+    socketio.run(app, host="0.0.0.0", port=5000, debug=False)
 
 
 if __name__ == "__main__":

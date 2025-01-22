@@ -4,12 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tieh"
-version = "0.1.1"
+version = "0.2.0"
 description = "Tiè! Send files to PC"
 authors = [{ name = "Fubeeo" }]
 license = { file = "LICENSE" }
 readme = "README.md"
 dependencies = [
+    "argparse",
     "flask",
     "flask_socketio",
     "appdirs",

@@ -1,6 +1,6 @@
 # Tieh (Tiè!)
 
-A simple web application to quickly transfer files from your phone to your PC using QR codes.
+A simple web application to quickly transfer files from your phone to your PC using QR codes (or viceversa).
 
 ## Features
 
@@ -19,6 +19,8 @@ pip install .
 
 ## Usage
 
+### Web Interface
+
 1. Run the application:
 ```bash
 tieh
@@ -30,6 +32,17 @@ tieh
    - Scan the QR code using your camera
    - Select files to upload
    - Click "Send"
+
+### Direct File Sharing
+
+Share a specific file directly:
+```bash
+tieh /path/to/file
+```
+This will:
+1. Generate a QR code in the terminal
+2. Create a temporary direct download link
+3. When scanned, the QR code will download the file directly to the phone
 
 ## Requirements
 
