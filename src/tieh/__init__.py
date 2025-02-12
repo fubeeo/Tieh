@@ -52,7 +52,7 @@ def generate_qrcode():
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=7,
-        border=0,
+        border=1,
     )
     qr.add_data(qr_data)
     qr.make(fit=True)
